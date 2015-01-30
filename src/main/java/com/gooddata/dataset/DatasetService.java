@@ -110,6 +110,11 @@ public class DatasetService extends AbstractService {
                 }
 
                 @Override
+                public void handlePollException(final GoodDataRestException e) {
+                    throw new DatasetException("Unable to load", manifest.getDataSet(), e);
+                }
+
+                @Override
                 protected void onFinish() {
                     try {
                         dataStoreService.delete(dirPath.toString() + "/");

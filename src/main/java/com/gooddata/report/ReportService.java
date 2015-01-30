@@ -6,6 +6,7 @@ package com.gooddata.report;
 import com.gooddata.AbstractService;
 import com.gooddata.FutureResult;
 import com.gooddata.GoodDataException;
+import com.gooddata.GoodDataRestException;
 import com.gooddata.SimplePollHandler;
 import com.gooddata.gdc.UriResponse;
 import com.gooddata.md.report.Report;
@@ -80,6 +81,12 @@ public class ReportService extends AbstractService {
                     default: throw new ReportException("Unable to export report, unknown HTTP response code: " + response.getStatusCode());
                 }
             }
+
+            @Override
+            public void handlePollException(final GoodDataRestException e) {
+                throw new ReportException("Unable to export report", e);
+            }
+
             @Override
             protected void onFinish() {
                 try {

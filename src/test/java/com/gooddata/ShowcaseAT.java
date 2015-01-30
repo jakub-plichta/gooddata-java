@@ -5,6 +5,7 @@ import com.gooddata.account.AccountService;
 import com.gooddata.dataload.processes.DataloadProcess;
 import com.gooddata.dataload.processes.ProcessExecution;
 import com.gooddata.dataload.processes.ProcessExecutionDetail;
+import com.gooddata.dataload.processes.ProcessExecutionException;
 import com.gooddata.dataload.processes.ProcessService;
 import com.gooddata.dataload.processes.ProcessType;
 import com.gooddata.dataset.DatasetManifest;
@@ -90,7 +91,7 @@ public class ShowcaseAT {
                 System.getenv().keySet());
     }
 
-    @AfterClass
+    //@AfterClass
     public void tearDown() throws Exception {
         if (gd != null && project != null) {
             gd.getProjectService().removeProject(project);
@@ -241,6 +242,7 @@ public class ShowcaseAT {
         final File dir = createTempDirectory("sdktest").toFile();
         try {
             copy("sdktest.grf", dir);
+            copy("invalid.grf", dir);
             copy("workspace.prm", dir);
             process = gd.getProcessService().createProcess(project, new DataloadProcess(title, ProcessType.GRAPH), dir);
         } finally {
@@ -269,6 +271,13 @@ public class ShowcaseAT {
         processService.getExecutionLog(executionDetail, outputStream);
         assertThat(outputStream.toString("UTF-8"), allOf(containsString("infoooooooo"), containsString("waaaaaaaarn"),
                 containsString("errooooooor"), containsString("fataaaaaaal")));
+    }
+
+    @Test(groups = "process", dependsOnMethods = "createProcess",
+            expectedExceptions = ProcessExecutionException.class, expectedExceptionsMessageRegExp = "(?s)Can't execute.*")
+    public void failExecuteProcess() throws Exception {
+        ProcessService processService = gd.getProcessService();
+        processService.executeProcess(new ProcessExecution(process, "invalid.grf")).get();
     }
 
     @Test(dependsOnGroups = "process")

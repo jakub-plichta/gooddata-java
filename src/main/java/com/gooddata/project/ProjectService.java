@@ -95,8 +95,13 @@ public class ProjectService extends AbstractService {
             @Override
             protected void onFinish() {
                 if (!getResult().isEnabled()) {
-                    throw new GoodDataException("Created project is not enabled");
+                    throw new GoodDataException("Created project " + uri + " is not enabled");
                 }
+            }
+
+            @Override
+            public void handlePollException(final GoodDataRestException e) {
+                throw new GoodDataException("Creating project " + uri + " failed", e);
             }
         });
     }

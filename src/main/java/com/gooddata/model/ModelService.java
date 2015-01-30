@@ -40,7 +40,12 @@ public class ModelService extends AbstractService {
         try {
             final AsyncTask asyncTask = restTemplate
                     .postForObject(DiffRequest.URI, diffRequest, AsyncTask.class, project.getId());
-            return new FutureResult<>(this, new SimplePollHandler<ModelDiff>(asyncTask.getUri(), ModelDiff.class));
+            return new FutureResult<>(this, new SimplePollHandler<ModelDiff>(asyncTask.getUri(), ModelDiff.class) {
+                @Override
+                public void handlePollException(final GoodDataRestException e) {
+                    throw new ModelException("Unable to get project model diff", e);
+                }
+            });
         } catch (GoodDataRestException | RestClientException e) {
             throw new ModelException("Unable to get project model diff", e);
         }
@@ -158,6 +163,11 @@ public class ModelService extends AbstractService {
             @Override
             public void handlePollResult(MaqlDdlLinks pollResult) {
                 setResult(null);
+            }
+
+            @Override
+            public void handlePollException(final GoodDataRestException e) {
+                throw new ModelException("Unable to update project model", e);
             }
         });
     }
