@@ -91,7 +91,7 @@ public class ShowcaseAT {
                 System.getenv().keySet());
     }
 
-    //@AfterClass
+    @AfterClass
     public void tearDown() throws Exception {
         if (gd != null && project != null) {
             gd.getProjectService().removeProject(project);

@@ -86,7 +86,7 @@ public abstract class AbstractService {
             response = restTemplate.execute(handler.getPollingUri(), GET, noopRequestCallback, reusableResponseExtractor);
         } catch (GoodDataRestException e) {
             handler.handlePollException(e);
-            throw new GoodDataException("Handler " + handler.getClass().getName() + " didn't handled exception", e);
+            throw new GoodDataException("Handler " + handler.getClass().getName() + " didn't handle exception", e);
         }
 
         try {
