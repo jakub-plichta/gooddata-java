@@ -27,14 +27,14 @@ public class WarehouseUsersTest {
     @Test
     public void testDeserialization() throws Exception {
         assertThat(users, notNullValue());
-        assertThat(users, hasSize(2));
-        assertThat(users.get(0).getProfile(), startsWith("/gdc/account/profile/{profile-id"));
+        assertThat(users.getPageItems(), hasSize(2));
+        assertThat(users.getPageItems().get(0).getProfile(), startsWith("/gdc/account/profile/{profile-id"));
     }
 
     @Test
     public void shouldDeserializeEmpty() throws Exception {
         final WarehouseUsers result = readObjectFromResource("/warehouse/users-empty.json", WarehouseUsers.class);
-        assertThat(result, hasSize(0));
+        assertThat(result.getPageItems(), hasSize(0));
         assertThat(result.getPaging(), is(notNullValue()));
     }
 

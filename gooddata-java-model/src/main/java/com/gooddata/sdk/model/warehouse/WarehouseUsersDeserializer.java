@@ -5,7 +5,7 @@
  */
 package com.gooddata.sdk.model.warehouse;
 
-import com.gooddata.collections.PageableListDeserializer;
+import com.gooddata.collections.PageDeserializer;
 import com.gooddata.collections.Paging;
 
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.Map;
 /**
  * Deserializer of JSON into warehouse users object.
  */
-class WarehouseUsersDeserializer extends PageableListDeserializer<WarehouseUsers, WarehouseUser> {
+class WarehouseUsersDeserializer extends PageDeserializer<WarehouseUsers, WarehouseUser> {
 
     protected WarehouseUsersDeserializer() {
         super(WarehouseUser.class);
     }
 
     @Override
-    protected WarehouseUsers createList(final List<WarehouseUser> items, final Paging paging, final Map<String, String> links) {
+    protected WarehouseUsers createPage(final List<WarehouseUser> items, final Paging paging, final Map<String, String> links) {
         return new WarehouseUsers(items, paging, links);
     }
 }

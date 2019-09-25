@@ -6,9 +6,9 @@
 package com.gooddata.sdk.service.warehouse;
 
 import com.gooddata.GoodDataException;
-import com.gooddata.collections.MultiPageList;
-import com.gooddata.collections.PageRequest;
-import com.gooddata.collections.PageableList;
+import com.gooddata.collections.CustomPageRequest;
+import com.gooddata.collections.PageBrowser;
+import com.gooddata.collections.Page;
 import com.gooddata.sdk.model.warehouse.*;
 import com.gooddata.sdk.service.AbstractGoodDataIT;
 import org.hamcrest.BaseMatcher;
@@ -115,11 +115,11 @@ public class WarehouseServiceIT extends AbstractGoodDataIT {
                 .withBody(readFromResource("/warehouse/warehouses.json"))
                 .withStatus(200);
 
-        final PageableList<Warehouse> list = gd.getWarehouseService().listWarehouses();
+        final Page<Warehouse> list = gd.getWarehouseService().listWarehouses();
         assertThat(list, notNullValue());
-        assertThat(list, hasSize(2));
-        assertThat(list.get(0).getConnectionUrl(), notNullValue());
-        assertThat(list.get(1).getConnectionUrl(), notNullValue());
+        assertThat(list.getPageItems(), hasSize(2));
+        assertThat(list.getPageItems().get(0).getConnectionUrl(), notNullValue());
+        assertThat(list.getPageItems().get(1).getConnectionUrl(), notNullValue());
     }
 
     @Test
@@ -211,10 +211,9 @@ public class WarehouseServiceIT extends AbstractGoodDataIT {
                 .respond()
                 .withBody(readFromResource("/warehouse/users.json"));
 
-        final MultiPageList<WarehouseUser> users = (MultiPageList<WarehouseUser>) gd.getWarehouseService().listWarehouseUsers(warehouse);
-        assertThat(users.size(), is(2));
-        assertThat(users.totalSize(), is(4));
-        assertThat(users.collectAll().size(), is(4));
+        final PageBrowser<WarehouseUser> users = gd.getWarehouseService().listWarehouseUsers(warehouse);
+        assertThat(users.getPageItems().size(), is(2));
+        assertThat(users.allItemsStream().count(), is(4L));
     }
 
 
@@ -227,8 +226,8 @@ public class WarehouseServiceIT extends AbstractGoodDataIT {
                 .respond()
                 .withBody(readFromResource("/warehouse/users.json"));
 
-        final PageableList<WarehouseUser> users = gd.getWarehouseService().listWarehouseUsers(warehouse, new PageRequest(2));
-        assertThat(users, Matchers.hasSize(2));
+        final Page<WarehouseUser> users = gd.getWarehouseService().listWarehouseUsers(warehouse, new CustomPageRequest(2));
+        assertThat(users.getPageItems(), Matchers.hasSize(2));
     }
 
     @Test
@@ -382,10 +381,10 @@ public class WarehouseServiceIT extends AbstractGoodDataIT {
                 .withBody(readFromResource("/warehouse/schemas.json"))
                 .withStatus(200);
 
-        final PageableList<WarehouseSchema> list = gd.getWarehouseService().listWarehouseSchemas(warehouse);
+        final Page<WarehouseSchema> list = gd.getWarehouseService().listWarehouseSchemas(warehouse);
         assertThat(list, notNullValue());
-        assertThat(list, hasSize(1));
-        assertThat(list.get(0).getName(), is(equalTo(SCHEMA_NAME)));
+        assertThat(list.getPageItems(), hasSize(1));
+        assertThat(list.getPageItems().get(0).getName(), is(equalTo(SCHEMA_NAME)));
     }
 
     @Test(expectedExceptions = WarehouseSchemaNotFoundException.class)

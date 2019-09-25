@@ -5,7 +5,7 @@
  */
 package com.gooddata.sdk.service.dataload.processes;
 
-import com.gooddata.collections.PageableList;
+import com.gooddata.collections.Page;
 import com.gooddata.sdk.model.dataload.processes.*;
 import com.gooddata.sdk.model.project.Project;
 import com.gooddata.sdk.service.AbstractGoodDataIT;
@@ -270,15 +270,15 @@ public class ProcessServiceIT extends AbstractGoodDataIT {
                 .withBody(readFromResource("/dataload/processes/schedules_page2.json"))
                 .withStatus(200);
 
-        final PageableList<Schedule> firstPage = gd.getProcessService().listSchedules(project);
+        final Page<Schedule> firstPage = gd.getProcessService().listSchedules(project);
         assertThat(firstPage, notNullValue());
-        assertThat(firstPage, hasSize(1));
+        assertThat(firstPage.getPageItems(), hasSize(1));
         assertThat(firstPage.getNextPage(), notNullValue());
         assertThat(firstPage.getNextPage().getPageUri(null).toString(), is("/gdc/projects/PROJECT_ID/schedules?offset=1&limit=1"));
 
-        final PageableList<Schedule> secondPage = gd.getProcessService().listSchedules(project, firstPage.getNextPage());
+        final Page<Schedule> secondPage = gd.getProcessService().listSchedules(project, firstPage.getNextPage());
         assertThat(secondPage, notNullValue());
-        assertThat(secondPage, hasSize(1));
+        assertThat(secondPage.getPageItems(), hasSize(1));
         assertThat(secondPage.getNextPage(), nullValue());
     }
 

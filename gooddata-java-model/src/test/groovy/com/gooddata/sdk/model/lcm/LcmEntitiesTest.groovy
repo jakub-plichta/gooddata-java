@@ -33,7 +33,7 @@ class LcmEntitiesTest extends Specification {
         LcmEntities lcmEntities = readObjectFromResource("/$EMPTY_JSON", LcmEntities)
 
         then:
-        lcmEntities.size() == 0
+        lcmEntities.getPageItems().size() == 0
         lcmEntities.paging
     }
 
@@ -42,8 +42,8 @@ class LcmEntitiesTest extends Specification {
         LcmEntities lcmEntities = readObjectFromResource("/$LCM_ENTITIES_JSON", LcmEntities)
 
         then:
-        lcmEntities.size() == 1
-        lcmEntities.first().projectId == 'PROJECT_ID'
+        lcmEntities.getPageItems().size() == 1
+        lcmEntities.getPageItems().first().projectId == 'PROJECT_ID'
         lcmEntities.paging
     }
 }

@@ -6,7 +6,7 @@
 package com.gooddata.sdk.service.project;
 
 import com.gooddata.GoodDataException;
-import com.gooddata.collections.PageRequest;
+import com.gooddata.collections.CustomPageRequest;
 import com.gooddata.sdk.model.account.Account;
 import com.gooddata.sdk.model.gdc.AsyncTask;
 import com.gooddata.sdk.model.gdc.TaskStatus;
@@ -321,11 +321,11 @@ public class ProjectServiceIT extends AbstractGoodDataIT {
                 .withBody(readFromResource("/project/project-users-empty.json"))
                 .withStatus(200);
 
-        final List<User> firstPage = gd.getProjectService().listUsers(enabled);
+        final List<User> firstPage = gd.getProjectService().listUsers(enabled).getPageItems();
         assertThat(firstPage, notNullValue());
         assertThat(firstPage, hasSize(1));
 
-        final List<User> secondPage = gd.getProjectService().listUsers(enabled, new PageRequest(firstPage.size(), 1));
+        final List<User> secondPage = gd.getProjectService().listUsers(enabled, new CustomPageRequest(firstPage.size(), 1)).getPageItems();
         assertThat(secondPage, notNullValue());
         assertThat(secondPage, empty());
     }

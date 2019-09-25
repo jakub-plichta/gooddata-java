@@ -5,7 +5,7 @@
  */
 package com.gooddata.sdk.service.auditevent;
 
-import com.gooddata.collections.PageRequest;
+import com.gooddata.collections.CustomPageRequest;
 import com.gooddata.util.GoodDataToStringBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 /**
  * Class to encapsulate time filtering and paging parameters
  */
-public final class AuditEventPageRequest extends PageRequest {
+public final class AuditEventPageRequest extends CustomPageRequest {
 
     private ZonedDateTime from;
 

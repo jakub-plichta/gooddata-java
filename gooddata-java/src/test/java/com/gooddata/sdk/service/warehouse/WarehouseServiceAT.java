@@ -5,9 +5,9 @@
  */
 package com.gooddata.sdk.service.warehouse;
 
+import com.gooddata.collections.CustomPageRequest;
 import com.gooddata.collections.Page;
 import com.gooddata.collections.PageRequest;
-import com.gooddata.collections.PageableList;
 import com.gooddata.sdk.model.account.Account;
 import com.gooddata.sdk.model.project.Environment;
 import com.gooddata.sdk.model.warehouse.Warehouse;
@@ -73,12 +73,12 @@ public class WarehouseServiceAT extends AbstractGoodDataAT {
     @Test(groups = "warehouse", dependsOnMethods = "createWarehouse")
     public void listWarehouses() {
         final LinkedList<Warehouse> result = new LinkedList<>();
-        Page page = new PageRequest(1000);
-        PageableList<Warehouse> warehouses;
+        PageRequest page = new CustomPageRequest(1000);
+        Page<Warehouse> warehouses;
 
         do {
             warehouses = service.listWarehouses(page);
-            result.addAll(warehouses);
+            result.addAll(warehouses.getPageItems());
             page = warehouses.getNextPage();
         } while (warehouses.hasNextPage());
 
@@ -92,17 +92,17 @@ public class WarehouseServiceAT extends AbstractGoodDataAT {
         wh.setEnvironment(Environment.TESTING);
         warehouse2 = service.createWarehouse(wh).get();
 
-        final PageableList<Warehouse> firstPage = service.listWarehouses(new PageRequest(1));
-        assertThat(firstPage, hasSize(1));
+        final Page<Warehouse> firstPage = service.listWarehouses(new CustomPageRequest(1));
+        assertThat(firstPage.getPageItems(), hasSize(1));
 
-        PageableList<Warehouse> page = service.listWarehouses(firstPage.getNextPage());
-        assertThat(page, hasSize(1));
+        Page<Warehouse> page = service.listWarehouses(firstPage.getNextPage());
+        assertThat(page.getPageItems(), hasSize(1));
     }
 
     @Test(groups = "warehouse", dependsOnMethods = "shouldPageList")
     public void shouldReturnNullOnEndOfPaging() {
-        PageableList<Warehouse> page = service.listWarehouses();
-        Page nextPage;
+        Page<Warehouse> page = service.listWarehouses();
+        PageRequest nextPage;
         while ((nextPage = page.getNextPage()) != null) {
             page = service.listWarehouses(nextPage);
         }
@@ -110,9 +110,9 @@ public class WarehouseServiceAT extends AbstractGoodDataAT {
 
     @Test(groups = "warehouse", dependsOnMethods = "createWarehouse")
     public void shouldListUsers() {
-        final PageableList<WarehouseUser> users = service.listWarehouseUsers(warehouse, new PageRequest(1));
-        assertThat(users, hasSize(1));
-        assertThat(users.get(0), is(notNullValue()));
+        final Page<WarehouseUser> users = service.listWarehouseUsers(warehouse, new CustomPageRequest(1));
+        assertThat(users.getPageItems(), hasSize(1));
+        assertThat(users.getPageItems().get(0), is(notNullValue()));
         assertThat(users.getNextPage(), is(nullValue()));
     }
 
@@ -131,8 +131,8 @@ public class WarehouseServiceAT extends AbstractGoodDataAT {
 
     @Test(groups = "warehouse", dependsOnMethods = "createWarehouse")
     public void listWarehouseSchemas() {
-        PageableList<WarehouseSchema> warehouseSchemas = service.listWarehouseSchemas(warehouse);
-        assertThat(warehouseSchemas, contains(hasProperty("name", equalTo(SCHEMA_NAME))));
+        Page<WarehouseSchema> warehouseSchemas = service.listWarehouseSchemas(warehouse);
+        assertThat(warehouseSchemas.getPageItems(), contains(hasProperty("name", equalTo(SCHEMA_NAME))));
     }
 
     @Test(groups = "warehouse", dependsOnMethods = "createWarehouse")

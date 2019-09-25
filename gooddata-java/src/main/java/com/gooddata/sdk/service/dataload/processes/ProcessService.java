@@ -7,10 +7,10 @@ package com.gooddata.sdk.service.dataload.processes;
 
 import com.gooddata.GoodDataException;
 import com.gooddata.GoodDataRestException;
-import com.gooddata.collections.MultiPageList;
+import com.gooddata.collections.CustomPageRequest;
+import com.gooddata.collections.PageBrowser;
 import com.gooddata.collections.Page;
 import com.gooddata.collections.PageRequest;
-import com.gooddata.collections.PageableList;
 import com.gooddata.sdk.model.dataload.processes.*;
 import com.gooddata.sdk.model.project.Project;
 import com.gooddata.sdk.service.*;
@@ -395,10 +395,10 @@ public class ProcessService extends AbstractService {
      * Get first page of paged list of schedules by given project.
      *
      * @param project project of schedules
-     * @return MultiPageList list of found schedules or empty list
+     * @return list of found schedules or empty list
      */
-    public PageableList<Schedule> listSchedules(final Project project) {
-        return listSchedules(project, new PageRequest());
+    public PageBrowser<Schedule> listSchedules(final Project project) {
+        return listSchedules(project, new CustomPageRequest());
     }
 
     /**
@@ -406,13 +406,13 @@ public class ProcessService extends AbstractService {
      *
      * @param project   project of schedules
      * @param startPage page to be retrieved
-     * @return MultiPageList list of found schedules or empty list
+     * @return list of found schedules or empty list
      */
-    public PageableList<Schedule> listSchedules(final Project project,
-                                                final Page startPage) {
+    public PageBrowser<Schedule> listSchedules(final Project project,
+                                               final PageRequest startPage) {
         notNull(project, "project");
         notNull(startPage, "startPage");
-        return new MultiPageList<>(startPage, page -> listSchedules(getSchedulesUri(project, page)));
+        return new PageBrowser<>(startPage, page -> listSchedules(getSchedulesUri(project, page)));
     }
 
     /**
@@ -467,11 +467,11 @@ public class ProcessService extends AbstractService {
         });
     }
 
-    private PageableList<Schedule> listSchedules(URI uri) {
+    private Page<Schedule> listSchedules(URI uri) {
         try {
             final Schedules schedules = restTemplate.getForObject(uri, Schedules.class);
             if (schedules == null) {
-                return new PageableList<>();
+                return new Page<>();
             }
             return schedules;
         } catch (GoodDataException | RestClientException e) {
@@ -493,7 +493,7 @@ public class ProcessService extends AbstractService {
         return SCHEDULES_TEMPLATE.expand(project.getId());
     }
 
-    private static URI getSchedulesUri(final Project project, final Page page) {
+    private static URI getSchedulesUri(final Project project, final PageRequest page) {
         return page.getPageUri(UriComponentsBuilder.fromUri(getSchedulesUri(project)));
     }
 

@@ -75,9 +75,9 @@ public class AuditEventsTest {
     public void testDeserialize() throws Exception {
         final AuditEvents deserialized = readObjectFromResource("/auditevents/auditEvents.json", AuditEvents.class);
         assertThat(deserialized.getPaging().getNextUri(), is(ADMIN_NEXT_URI));
-        assertThat(deserialized, hasSize(2));
-        assertThat(deserialized.get(0).getId(), is(EVENT_1.getId()));
-        assertThat(deserialized.get(1).getId(), is(EVENT_2.getId()));
+        assertThat(deserialized.getPageItems(), hasSize(2));
+        assertThat(deserialized.getPageItems().get(0).getId(), is(EVENT_1.getId()));
+        assertThat(deserialized.getPageItems().get(1).getId(), is(EVENT_2.getId()));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class AuditEventsTest {
     public void testDeserializeEmptyEvents() throws Exception {
         final AuditEvents deserialized = readObjectFromResource("/auditevents/emptyAuditEvents.json", AuditEvents.class);
         assertThat(deserialized.getPaging().getNextUri(), nullValue());
-        assertThat(deserialized, hasSize(0));
+        assertThat(deserialized.getPageItems(), hasSize(0));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class AuditEventsTest {
     public void testDeserializeUserEvents() throws Exception {
         final AuditEvents deserialized = readObjectFromResource("/auditevents/userAuditEvents.json", AuditEvents.class);
         assertThat(deserialized.getPaging().getNextUri(), is(USER_NEXT_URI));
-        assertThat(deserialized, hasSize(1));
-        assertThat(deserialized.get(0).getId(), is(EVENT_1.getId()));
+        assertThat(deserialized.getPageItems(), hasSize(1));
+        assertThat(deserialized.getPageItems().get(0).getId(), is(EVENT_1.getId()));
     }
 }

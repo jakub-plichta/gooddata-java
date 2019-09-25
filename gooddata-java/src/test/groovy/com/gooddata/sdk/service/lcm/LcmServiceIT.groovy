@@ -36,7 +36,7 @@ class LcmServiceIT extends GoodDataITBase<LcmService> {
         def entities = list(service)
 
         then:
-        entities.size() == 1
+        entities.getPageItems().size() == 1
 
         where:
         type       | list                                    || queryString

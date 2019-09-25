@@ -7,10 +7,10 @@ package com.gooddata.sdk.service.warehouse;
 
 import com.gooddata.GoodDataException;
 import com.gooddata.GoodDataRestException;
-import com.gooddata.collections.MultiPageList;
+import com.gooddata.collections.CustomPageRequest;
+import com.gooddata.collections.PageBrowser;
 import com.gooddata.collections.Page;
 import com.gooddata.collections.PageRequest;
-import com.gooddata.collections.PageableList;
 import com.gooddata.sdk.model.warehouse.*;
 import com.gooddata.sdk.service.*;
 import org.springframework.http.HttpMethod;
@@ -152,13 +152,13 @@ public class WarehouseService extends AbstractService {
 
     /**
      * Lists Warehouses. Returns empty list in case there are no warehouses.
-     * Returns only first page if there's more instances than page limit. Use {@link PageableList#stream()} to iterate
-     * over all pages, or {@link MultiPageList#collectAll()} to load the entire list.
+     * Returns only first page if there's more instances than page limit. Use {@link PageBrowser#allItemsStream()} to iterate
+     * over all pages.
      *
-     * @return MultiPageList first page of list of warehouse instances or empty list
+     * @return first page of list of warehouse instances or empty list
      */
-    public PageableList<Warehouse> listWarehouses() {
-        return listWarehouses(new PageRequest());
+    public PageBrowser<Warehouse> listWarehouses() {
+        return listWarehouses(new CustomPageRequest());
     }
 
     /**
@@ -166,26 +166,26 @@ public class WarehouseService extends AbstractService {
      * Returns requested page (by page limit and offset). Use {@link #listWarehouses()} to get first page with default setting.
      *
      * @param startPage page to be listed
-     * @return MultiPageList requested page of list of instances or empty list
+     * @return requested page of list of instances or empty list
      */
-    public PageableList<Warehouse> listWarehouses(final Page startPage) {
+    public PageBrowser<Warehouse> listWarehouses(final PageRequest startPage) {
         notNull(startPage, "startPage");
-        return new MultiPageList<>(startPage, page -> listWarehouses(getWarehousesUri(page)));
+        return new PageBrowser<>(startPage, page -> listWarehouses(getWarehousesUri(page)));
     }
 
     private URI getWarehousesUri() {
         return URI.create(Warehouses.URI);
     }
 
-    private URI getWarehousesUri(final Page page) {
+    private URI getWarehousesUri(final PageRequest page) {
         return page.getPageUri(UriComponentsBuilder.fromUri(getWarehousesUri()));
     }
 
-    private PageableList<Warehouse> listWarehouses(final URI uri) {
+    private Page<Warehouse> listWarehouses(final URI uri) {
         try {
             final Warehouses result = restTemplate.getForObject(uri, Warehouses.class);
             if (result == null) {
-                return new PageableList<>();
+                return new Page<>();
             }
             return result;
         } catch (GoodDataException | RestClientException e) {
@@ -195,31 +195,29 @@ public class WarehouseService extends AbstractService {
 
     /**
      * Lists warehouse users. Returns empty list in case there are no users.
-     * Use {@link PageableList#stream()} to iterate over all pages,
-     * or {@link MultiPageList#collectAll()} to load the entire list.
+     * Use {@link PageBrowser#allItemsStream()} to iterate over all pages.
      *
      * @param warehouse warehouse
-     * @return MultiPageList requested page of list of instances or empty list
+     * @return requested page of list of instances or empty list
      */
-    public PageableList<WarehouseUser> listWarehouseUsers(final Warehouse warehouse) {
-        return listWarehouseUsers(warehouse, new PageRequest());
+    public PageBrowser<WarehouseUser> listWarehouseUsers(final Warehouse warehouse) {
+        return listWarehouseUsers(warehouse, new CustomPageRequest());
     }
 
     /**
      * Lists warehouse users, starting with specified page. Returns empty list in case there are no users.
-     * Use {@link PageableList#stream()} to iterate over all pages,
-     * or {@link MultiPageList#collectAll()} to load the entire list.
+     * Use {@link PageBrowser#allItemsStream()} to iterate over all pages,
      *
      * @param warehouse warehouse
      * @param startPage page to start with
-     * @return MultiPageList requested page of list of instances starting with startPage or empty list
+     * @return requested page of list of instances starting with startPage or empty list
      */
-    public PageableList<WarehouseUser> listWarehouseUsers(final Warehouse warehouse, final Page startPage) {
+    public PageBrowser<WarehouseUser> listWarehouseUsers(final Warehouse warehouse, final PageRequest startPage) {
         notNull(warehouse, "warehouse");
         notNull(warehouse.getId(), "warehouse.id");
         notNull(startPage, "startPage");
 
-        return new MultiPageList<>(startPage,
+        return new PageBrowser<>(startPage,
                 page -> listWarehouseUsers(warehouse, getWarehouseUsersUri(warehouse, page)));
     }
 
@@ -227,14 +225,14 @@ public class WarehouseService extends AbstractService {
         return USERS_TEMPLATE.expand(warehouse.getId());
     }
 
-    private URI getWarehouseUsersUri(final Warehouse warehouse, final Page page) {
+    private URI getWarehouseUsersUri(final Warehouse warehouse, final PageRequest page) {
         return page.getPageUri(UriComponentsBuilder.fromUri(getWarehouseUsersUri(warehouse)));
     }
 
-    private PageableList<WarehouseUser> listWarehouseUsers(final Warehouse warehouse, final URI uri) {
+    private Page<WarehouseUser> listWarehouseUsers(final Warehouse warehouse, final URI uri) {
         try {
             final WarehouseUsers result = restTemplate.getForObject(uri, WarehouseUsers.class);
-            return result == null ? new PageableList<>() : result;
+            return result == null ? new Page<>() : result;
         } catch (GoodDataException | RestClientException e) {
             throw new GoodDataException("Unable to list users of warehouse " + warehouse.getId(), e);
         }
@@ -360,10 +358,10 @@ public class WarehouseService extends AbstractService {
      * list schemas for Warehouse
      *
      * @param warehouse to list schemas for
-     * @return MultiPageList pageable list of warehouse schemas
+     * @return pageable list of warehouse schemas
      */
-    public PageableList<WarehouseSchema> listWarehouseSchemas(final Warehouse warehouse) {
-        return listWarehouseSchemas(warehouse, new PageRequest());
+    public PageBrowser<WarehouseSchema> listWarehouseSchemas(final Warehouse warehouse) {
+        return listWarehouseSchemas(warehouse, new CustomPageRequest());
     }
 
     /**
@@ -371,10 +369,10 @@ public class WarehouseService extends AbstractService {
      *
      * @param warehouse to list schemas for
      * @param startPage page to be listed
-     * @return MultiPageList pageable list of warehouse schemas
+     * @return pageable list of warehouse schemas
      */
-    public PageableList<WarehouseSchema> listWarehouseSchemas(final Warehouse warehouse, final Page startPage) {
-        return new MultiPageList<>(startPage,
+    public PageBrowser<WarehouseSchema> listWarehouseSchemas(final Warehouse warehouse, final PageRequest startPage) {
+        return new PageBrowser<>(startPage,
                 page -> listWarehouseSchemas(getWarehouseSchemasUri(warehouse, page))
         );
     }
@@ -385,16 +383,16 @@ public class WarehouseService extends AbstractService {
         return SCHEMAS_TEMPLATE.expand(warehouse.getId());
     }
 
-    private URI getWarehouseSchemasUri(final Warehouse warehouse, final Page page) {
+    private URI getWarehouseSchemasUri(final Warehouse warehouse, final PageRequest page) {
         notNull(page, "page");
         return page.getPageUri(UriComponentsBuilder.fromUri(getWarehouseSchemasUri(warehouse)));
     }
 
-    private PageableList<WarehouseSchema> listWarehouseSchemas(final URI uri) {
+    private Page<WarehouseSchema> listWarehouseSchemas(final URI uri) {
         try {
             final WarehouseSchemas result = restTemplate.getForObject(uri, WarehouseSchemas.class);
             if (result == null) {
-                return new PageableList<>();
+                return new Page<>();
             }
             return result;
         } catch (GoodDataException | RestClientException e) {

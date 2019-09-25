@@ -7,9 +7,9 @@ package com.gooddata.sdk.service.project;
 
 import com.gooddata.GoodDataException;
 import com.gooddata.GoodDataRestException;
-import com.gooddata.collections.MultiPageList;
 import com.gooddata.collections.Page;
-import com.gooddata.collections.PageableList;
+import com.gooddata.collections.PageBrowser;
+import com.gooddata.collections.PageRequest;
 import com.gooddata.sdk.model.account.Account;
 import com.gooddata.sdk.model.gdc.AsyncTask;
 import com.gooddata.sdk.model.gdc.UriResponse;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.gooddata.util.Validate.*;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.web.util.UriComponentsBuilder.fromUri;
 
 /**
@@ -66,41 +67,41 @@ public class ProjectService extends AbstractService {
      *
      * @return collection of all projects current user has access to
      * @throws com.gooddata.GoodDataException when projects can't be accessed
-     * @deprecated use {@link #listProjects()} or {@link #listProjects(Page)} instead.
+     * @deprecated use {@link #listProjects()} or {@link #listProjects(PageRequest)} instead.
      * Deprecated since version 3.0.0. Will be removed in one of future versions.
      */
     @Deprecated
     public Collection<Project> getProjects() {
-        return listProjects().collectAll();
+        return listProjects().allItemsStream().collect(toList());
     }
 
     /**
      * Get first page of paged list of projects that current user has access to.
      *
-     * @return MultiPageList list of found projects or empty list
+     * @return list of found projects or empty list
      */
-    public PageableList<Project> listProjects() {
+    public PageBrowser<Project> listProjects() {
         final String userId = accountService.getCurrent().getId();
-        return new MultiPageList<>(page -> listProjects(getProjectsUri(userId, page)));
+        return new PageBrowser<>(page -> listProjects(getProjectsUri(userId, page)));
     }
 
     /**
      * Get defined page of paged list of projects that current user has access to.
      *
      * @param startPage page to be retrieved first
-     * @return MultiPageList list of found projects or empty list
+     * @return list of found projects or empty list
      */
-    public PageableList<Project> listProjects(final Page startPage) {
+    public PageBrowser<Project> listProjects(final PageRequest startPage) {
         notNull(startPage, "startPage");
         final String userId = accountService.getCurrent().getId();
-        return new MultiPageList<>(startPage, page -> listProjects(getProjectsUri(userId, page)));
+        return new PageBrowser<>(startPage, page -> listProjects(getProjectsUri(userId, page)));
     }
 
-    private PageableList<Project> listProjects(final URI uri) {
+    private Page<Project> listProjects(final URI uri) {
         try {
             final Projects projects = restTemplate.getForObject(uri, Projects.class);
             if (projects == null) {
-                return new PageableList<>();
+                return new Page<>();
             }
             return projects;
         } catch (GoodDataException | RestClientException e) {
@@ -113,7 +114,7 @@ public class ProjectService extends AbstractService {
         return LIST_PROJECTS_TEMPLATE.expand(userId);
     }
 
-    private static URI getProjectsUri(final String userId, final Page page) {
+    private static URI getProjectsUri(final String userId, final PageRequest page) {
         return page.getPageUri(fromUri(getProjectsUri(userId)));
     }
 
@@ -315,11 +316,11 @@ public class ProjectService extends AbstractService {
      * Get first page of paged list of users by given project.
      *
      * @param project project of users
-     * @return MultiPageList list of found users or empty list
+     * @return list of found users or empty list
      */
-    public PageableList<User> listUsers(final Project project) {
+    public PageBrowser<User> listUsers(final Project project) {
         notNull(project, "project");
-        return new MultiPageList<>(page -> listUsers(getUsersUri(project, page)));
+        return new PageBrowser<>(page -> listUsers(getUsersUri(project, page)));
     }
 
     /**
@@ -327,19 +328,19 @@ public class ProjectService extends AbstractService {
      *
      * @param project   project of users
      * @param startPage page to be retrieved first
-     * @return MultiPageList list of found users or empty list
+     * @return list of found users or empty list
      */
-    public PageableList<User> listUsers(final Project project, final Page startPage) {
+    public PageBrowser<User> listUsers(final Project project, final PageRequest startPage) {
         notNull(project, "project");
         notNull(startPage, "startPage");
-        return new MultiPageList<>(startPage, page -> listUsers(getUsersUri(project, page)));
+        return new PageBrowser<>(startPage, page -> listUsers(getUsersUri(project, page)));
     }
 
-    private PageableList<User> listUsers(final URI uri) {
+    private Page<User> listUsers(final URI uri) {
         try {
             final Users users = restTemplate.getForObject(uri, Users.class);
             if (users == null) {
-                return new PageableList<>();
+                return new Page<>();
             }
             return users;
         } catch (GoodDataException | RestClientException e) {
@@ -352,7 +353,7 @@ public class ProjectService extends AbstractService {
         return PROJECT_USERS_TEMPLATE.expand(project.getId());
     }
 
-    private static URI getUsersUri(final Project project, final Page page) {
+    private static URI getUsersUri(final Project project, final PageRequest page) {
         return page.getPageUri(fromUri(getUsersUri(project)));
     }
 

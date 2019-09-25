@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 import java.time.ZonedDateTime;
 
-import static com.gooddata.collections.PageRequest.DEFAULT_LIMIT;
+import static com.gooddata.collections.CustomPageRequest.DEFAULT_LIMIT;
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;

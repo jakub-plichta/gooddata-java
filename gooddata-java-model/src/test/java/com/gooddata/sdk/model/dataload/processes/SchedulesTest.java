@@ -21,9 +21,9 @@ public class SchedulesTest {
         final Schedules schedules = readObjectFromResource("/dataload/processes/schedules.json", Schedules.class);
 
         assertThat(schedules, notNullValue());
-        assertThat(schedules, hasSize(1));
-        assertThat(schedules.get(0).getId(), is("schedule_id"));
-        assertThat(schedules.get(0).getType(), is("MSETL"));
+        assertThat(schedules.getPageItems(), hasSize(1));
+        assertThat(schedules.getPageItems().get(0).getId(), is("schedule_id"));
+        assertThat(schedules.getPageItems().get(0).getType(), is("MSETL"));
         assertThat(schedules.getNextPage(), nullValue());
     }
 
@@ -32,9 +32,9 @@ public class SchedulesTest {
         final Schedules schedules = readObjectFromResource("/dataload/processes/schedules_page1.json", Schedules.class);
 
         assertThat(schedules, notNullValue());
-        assertThat(schedules, hasSize(1));
-        assertThat(schedules.get(0).getId(), is("schedule_id_1"));
-        assertThat(schedules.get(0).getType(), is("MSETL"));
+        assertThat(schedules.getPageItems(), hasSize(1));
+        assertThat(schedules.getPageItems().get(0).getId(), is("schedule_id_1"));
+        assertThat(schedules.getPageItems().get(0).getType(), is("MSETL"));
         assertThat(schedules.getNextPage(), notNullValue());
         assertThat(schedules.getNextPage().getPageUri(null).toString(), is("/gdc/projects/PROJECT_ID/schedules?offset=1&limit=1"));
     }

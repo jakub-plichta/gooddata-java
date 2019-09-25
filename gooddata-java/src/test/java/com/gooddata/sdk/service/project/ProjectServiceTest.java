@@ -7,7 +7,7 @@ package com.gooddata.sdk.service.project;
 
 import com.gooddata.GoodDataException;
 import com.gooddata.GoodDataRestException;
-import com.gooddata.collections.PageRequest;
+import com.gooddata.collections.CustomPageRequest;
 import com.gooddata.collections.Paging;
 import com.gooddata.sdk.model.account.Account;
 import com.gooddata.sdk.model.project.Project;
@@ -87,7 +87,7 @@ public class ProjectServiceTest {
     public void testListProjects() throws Exception {
         doReturn(new Projects(singletonList(project), new Paging(""))).when(restTemplate)
                 .getForObject(new URI(LIST_PROJECTS_TEMPLATE.expand(ACCOUNT_ID) + "?limit=100"), Projects.class);
-        final Collection<Project> result = service.listProjects();
+        final Collection<Project> result = service.listProjects().getPageItems();
 
         assertThat(result, hasSize(1));
         assertThat(result, hasItem(project));
@@ -97,7 +97,7 @@ public class ProjectServiceTest {
     public void testListProjectsWithPage() throws Exception {
         doReturn(new Projects(singletonList(project), new Paging(""))).when(restTemplate)
                 .getForObject(new URI(LIST_PROJECTS_TEMPLATE.expand(ACCOUNT_ID) + "?offset=2&limit=100"), Projects.class);
-        final Collection<Project> result = service.listProjects(new PageRequest(2, 100));
+        final Collection<Project> result = service.listProjects(new CustomPageRequest(2, 100)).getPageItems();
 
         assertThat(result, hasSize(1));
         assertThat(result, hasItem(project));

@@ -19,7 +19,7 @@ public class WarehouseSchemasTest {
     @Test
     public void testDeserialization() throws Exception {
         assertThat(warehouseSchemas, notNullValue());
-        assertThat(warehouseSchemas, hasSize(1));
-        assertThat(warehouseSchemas.get(0).getName(), is("default"));
+        assertThat(warehouseSchemas.getPageItems(), hasSize(1));
+        assertThat(warehouseSchemas.getPageItems().get(0).getName(), is("default"));
     }
 }
